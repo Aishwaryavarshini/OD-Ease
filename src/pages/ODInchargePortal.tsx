@@ -5,6 +5,11 @@ import { Bell, Home, PieChart, RefreshCw, AlertCircle } from 'lucide-react';
 import { ODApplication } from '../types';
 import ODApplicationModal from '../components/ODApplicationModal';
 import ODReportView from '../components/ODReportView';
+import {
+  canMentorApproveOrReject,
+  canCcApproveOrReject,
+  canStaffApproveOrReject,
+} from '../utils/approvalEligibility';
 
 const ODInchargePortal = () => {
   const { user, logout } = useAuth();
@@ -28,13 +33,24 @@ const ODInchargePortal = () => {
   const approvedCount = applications.filter(a => a.status === 'Approved').length;
 
   const handleApprove = (app: ODApplication) => {
-    updateApplicationStatus(app.id, 'Approved', 'ODIncharge', user?.name || 'EEE Coordinator');
+    if (!user) return;
+    if (canMentorApproveOrReject(app, user)) {
+      updateApplicationStatus(app.id, 'Approved', 'Mentor', user.name);
+    } else if (canCcApproveOrReject(app, user)) {
+      updateApplicationStatus(app.id, 'Approved', 'CC', user.name);
+    }
   };
 
   const handleReject = (app: ODApplication) => {
+    if (!user) return;
+    const isMentor = canMentorApproveOrReject(app, user);
+    const isCc = canCcApproveOrReject(app, user);
+    if (!isMentor && !isCc) return;
+
     const reason = window.prompt("Please enter the reason for rejection:");
     if (reason !== null) {
-      updateApplicationStatus(app.id, 'Rejected', 'ODIncharge', user?.name || 'EEE Coordinator', reason || 'No reason provided');
+      const role = isMentor ? 'Mentor' : 'CC';
+      updateApplicationStatus(app.id, 'Rejected', role, user.name, reason || 'No reason provided');
     }
   };
 
@@ -42,15 +58,13 @@ const ODInchargePortal = () => {
     directApprove(app.id, user?.name || 'EEE Coordinator');
   };
 
-  // Eligibility: Approve / Reject — standard ODIncharge step
+  // Eligibility: Standard Approve / Reject — only if user is student's assigned Mentor or assigned CC/Co-CC
   const canApproveOrReject = (app: ODApplication): boolean =>
-    app.approvals.odIncharge === undefined &&
-    app.status !== 'Approved' &&
-    app.status !== 'Rejected';
+    canStaffApproveOrReject(app, user);
 
-  // Eligibility: Approval (direct / final approval)
+  // Eligibility: "Approval" button — EEE Coordinator final approval authority, available for any application not already Approved (bypasses pending & rejected)
   const canDirectApproval = (app: ODApplication): boolean =>
-    app.status !== 'Approved' && app.status !== 'Rejected';
+    app.status !== 'Approved';
 
   const getStatusBadge = (status: string) => {
     if (status === 'Approved') return <span className="badge badge-approved">Approved</span>;

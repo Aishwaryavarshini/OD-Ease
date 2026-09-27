@@ -8,6 +8,13 @@ import { getMasterStudentsSync } from '../lib/masterStudentsService';
 import ODApplicationModal from '../components/ODApplicationModal';
 import ODReportView from '../components/ODReportView';
 import HODMasterDBView from '../components/HODMasterDBView';
+import {
+  isAssignedMentor,
+  isYearCC,
+  canMentorApproveOrReject,
+  canCcApproveOrReject,
+  canStaffApproveOrReject,
+} from '../utils/approvalEligibility';
 
 const StaffPortal = () => {
   const { user, logout } = useAuth();
@@ -30,42 +37,8 @@ const StaffPortal = () => {
     }
   }, [isHod, activeView]);
 
-  // Check if logged in staff is the student's assigned mentor
-  const isAssignedMentor = (app: ODApplication) => {
-    if (!user?.email) return false;
-    if (app.mentorEmail && app.mentorEmail.toLowerCase().trim() === userEmail) return true;
-    const liveStudents = getMasterStudentsSync();
-    const studentMaster = liveStudents.find(s => s.registerNumber === app.registerNumber);
-    if (studentMaster && studentMaster.mentorEmail.toLowerCase().trim() === userEmail) return true;
-    if (app.mentorName && user.name && app.mentorName.toLowerCase().trim() === user.name.toLowerCase().trim()) return true;
-    return false;
-  };
-
-  // Check if logged in staff is CC or Co-CC for the student's Year and Department
-  const isYearCC = (app: ODApplication) => {
-    if (!user?.email) return false;
-    const userDept = (user.department || 'EEE').trim().toLowerCase();
-    const appDept = (app.department || 'EEE').trim().toLowerCase();
-    if (appDept !== userDept) return false;
-
-    // 1. Check live master_students roster
-    const liveStudents = getMasterStudentsSync();
-    const studentMaster = liveStudents.find(s => s.registerNumber === app.registerNumber);
-    if (studentMaster) {
-      if (studentMaster.ccEmail && studentMaster.ccEmail.toLowerCase().trim() === userEmail) return true;
-      if (studentMaster.coCcEmail && studentMaster.coCcEmail.toLowerCase().trim() === userEmail) return true;
-    }
-
-    // 2. Fallback to MASTER_CC_MAPPINGS
-    return MASTER_CC_MAPPINGS.some(
-      m => m.year === app.year &&
-        m.department.toLowerCase() === userDept &&
-        (m.cc.email.toLowerCase().trim() === userEmail || m.coCc.email.toLowerCase().trim() === userEmail)
-    );
-  };
-
   // Staff members see applications from their assigned mentees OR their CC/Co-CC batch
-  const relevantApps = applications.filter(app => isAssignedMentor(app) || isYearCC(app));
+  const relevantApps = applications.filter(app => isAssignedMentor(app, user) || isYearCC(app, user));
 
   const filteredApps = relevantApps.filter(app => {
     const matchesSearch = app.studentName.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -87,22 +60,17 @@ const StaffPortal = () => {
 
   const handleApprove = (app: ODApplication) => {
     if (!user) return;
-    if (app.approvals.mentor === false) {
-      alert('This application was rejected by the mentor. CC approval is blocked. Only OD Incharge can approve.');
-      return;
-    }
     if (app.status === 'Rejected' || app.status === 'Approved') {
       alert('This application is already finalised.');
       return;
     }
 
-    const canMentorApprove = isAssignedMentor(app) && app.approvals.mentor === undefined;
-    const canCcApprove = isYearCC(app) && app.approvals.cc === undefined && (app.approvals.mentor as boolean | undefined) !== false;
-
-    if (canMentorApprove) {
+    if (canMentorApproveOrReject(app, user)) {
       updateApplicationStatus(app.id, 'Approved', 'Mentor', user.name);
-    } else if (canCcApprove) {
+    } else if (canCcApproveOrReject(app, user)) {
       updateApplicationStatus(app.id, 'Approved', 'CC', user.name);
+    } else if (app.approvals.mentor === false) {
+      alert('This application was rejected by the mentor. CC approval is blocked.');
     } else {
       alert('You are not authorised to approve this application at its current stage.');
     }
@@ -114,9 +82,22 @@ const StaffPortal = () => {
       alert('This application is already finalised.');
       return;
     }
+
+    const isMentor = canMentorApproveOrReject(app, user);
+    const isCc = canCcApproveOrReject(app, user);
+
+    if (!isMentor && !isCc) {
+      if (app.approvals.mentor === false) {
+        alert('This application was rejected by the mentor.');
+      } else {
+        alert('You are not authorised to reject this application at its current stage.');
+      }
+      return;
+    }
+
     const reason = window.prompt('Please enter the reason for rejection:');
     if (reason !== null) {
-      const role = (isAssignedMentor(app) && app.approvals.mentor === undefined) ? 'Mentor' : 'CC';
+      const role = isMentor ? 'Mentor' : 'CC';
       updateApplicationStatus(app.id, 'Rejected', role, user.name, reason || 'No reason provided');
     }
   };
@@ -130,10 +111,7 @@ const StaffPortal = () => {
 
   // Determine if this user can still take action
   const canAct = (app: ODApplication) => {
-    if (app.status === 'Approved' || app.status === 'Rejected') return false;
-    const canMentor = isAssignedMentor(app) && app.approvals.mentor === undefined;
-    const canCc = isYearCC(app) && app.approvals.cc === undefined && (app.approvals.mentor as boolean | undefined) !== false;
-    return canMentor || canCc;
+    return canStaffApproveOrReject(app, user);
   };
 
   return (
