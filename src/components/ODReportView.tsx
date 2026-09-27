@@ -100,8 +100,9 @@ const ODReportView: React.FC<Props> = ({ applications }) => {
   const [activePreviewSheet, setActivePreviewSheet] = useState<string>('');
 
   const userEmail = (user?.email || '').toLowerCase().trim();
-  const isHOD = userEmail === HOD_EMAIL;
-  const isPrincipal = userEmail === PRINCIPAL_EMAIL;
+  const isHOD = user?.role === 'HOD';
+  const hodDept = user?.department || 'HOD';
+  const isPrincipal = user?.role === 'Principal';
 
   // HOD scope: strictly Approved applications only
   const reportApps = isHOD
@@ -162,7 +163,7 @@ const ODReportView: React.FC<Props> = ({ applications }) => {
       });
 
     const dateStr = new Date().toISOString().slice(0, 10);
-    saveWorkbook(wb, `EEE_HOD_OD_Report_${dateStr}.xlsx`);
+    saveWorkbook(wb, `${hodDept}_HOD_OD_Report_${dateStr}.xlsx`);
   };
 
   // ── Principal Export: Approved only, split by Department ─────────────────
@@ -414,7 +415,7 @@ const ODReportView: React.FC<Props> = ({ applications }) => {
             <div className="px-6 py-4 border-b flex justify-between items-center bg-gray-50">
               <div>
                 <h3 className="text-lg font-bold text-gray-900">
-                  {isHOD ? 'Report Preview (EEE HOD Year-wise Sheets)' : isPrincipal ? 'Report Preview (Principal Department-wise Sheets)' : 'OD Report Preview'}
+                  {isHOD ? `Report Preview (${hodDept} HOD – Year-wise Sheets)` : isPrincipal ? 'Report Preview (Principal Department-wise Sheets)' : 'OD Report Preview'}
                 </h3>
                 <p className="text-xs text-gray-500">Inspect full database report columns before downloading Excel</p>
               </div>

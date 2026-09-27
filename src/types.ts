@@ -1,4 +1,4 @@
-export type Role = 'Student' | 'Staff' | 'ODIncharge' | 'Principal';
+export type Role = 'Student' | 'Staff' | 'HOD' | 'ODIncharge' | 'Principal';
 
 export interface User {
   email: string;
@@ -13,6 +13,7 @@ export interface User {
   studentCount?: number;
   isCc?: boolean;
   isCoCc?: boolean;
+  isHod?: boolean;
   ccYears?: string[];
 }
 

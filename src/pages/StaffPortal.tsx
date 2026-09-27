@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth, HOD_EMAIL, HOD_MAPPINGS } from '../context/AuthContext';
+import { useAuth } from '../context/AuthContext';
 import { useOD } from '../context/ODContext';
 import { Bell, Home, FileText, CheckCircle, Calendar, PieChart, User as UserIcon, Filter, Database } from 'lucide-react';
 import { ODApplication } from '../types';
@@ -17,7 +17,8 @@ const StaffPortal = () => {
   const [selectedApp, setSelectedApp] = useState<ODApplication | null>(null);
 
   const userEmail = (user?.email || '').toLowerCase().trim();
-  const isHod = userEmail === HOD_EMAIL || userEmail in HOD_MAPPINGS;
+  const isHod = user?.role === 'HOD';
+  const hodDepartment = isHod ? (user?.department || '') : '';
 
   const [activeView, setActiveView] = useState<'dashboard' | 'report' | 'calendar' | 'master-db'>(
     isHod ? 'report' : 'dashboard'
@@ -227,7 +228,15 @@ const StaffPortal = () => {
 
           {/* ===== REPORT VIEW ===== */}
           {activeView === 'report' && (
-            <ODReportView applications={isHod ? applications : relevantApps} />
+            <ODReportView
+              applications={
+                isHod
+                  ? applications.filter(
+                      a => (a.department || '').trim().toLowerCase() === hodDepartment.trim().toLowerCase()
+                    )
+                  : relevantApps
+              }
+            />
           )}
 
           {/* ===== CALENDAR VIEW ===== */}

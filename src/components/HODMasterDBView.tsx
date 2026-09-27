@@ -105,7 +105,11 @@ const HODMasterDBView: React.FC = () => {
     }
 
     setLoading(true);
-    const res = await updateMasterStudent(formData);
+    // Force department to HOD's own department — cannot be changed by the HOD
+    const safeFormData = (hodDept && hodDept !== 'All Departments' && hodDept !== 'All')
+      ? { ...formData, department: hodDept }
+      : formData;
+    const res = await updateMasterStudent(safeFormData);
     setLoading(false);
 
     if (res.error) {
@@ -738,10 +742,10 @@ const HODMasterDBView: React.FC = () => {
                 </label>
                 <input
                   type="text"
-                  value={formData.department}
-                  onChange={e => setFormData({ ...formData, department: e.target.value })}
-                  className="input-field"
-                  required
+                  value={hodDept && hodDept !== 'All Departments' && hodDept !== 'All' ? hodDept : formData.department}
+                  disabled
+                  className="input-field bg-gray-100 cursor-not-allowed text-gray-500"
+                  title="Department is locked to your assigned department"
                 />
               </div>
 

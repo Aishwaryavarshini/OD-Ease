@@ -10,13 +10,19 @@ export const PRINCIPAL_EMAIL = 'principal@trp.srmtrichy.edu.in';
 export const HOD_EMAIL = 'amudha.j@trp.srmtrichy.edu.in';
 
 export const HOD_MAPPINGS: Record<string, { name: string; department: string }> = {
-  'amudha.j@trp.srmtrichy.edu.in': { name: 'Dr. J. Amudha', department: 'EEE' },
-  'hod.eee@trp.srmtrichy.edu.in': { name: 'Dr. J. Amudha (HOD EEE)', department: 'EEE' },
-  'hod.ece@trp.srmtrichy.edu.in': { name: 'HOD ECE', department: 'ECE' },
-  'hod.cse@trp.srmtrichy.edu.in': { name: 'HOD CSE', department: 'CSE' },
-  'hod.aiml@trp.srmtrichy.edu.in': { name: 'HOD AIML', department: 'AIML' },
-  'hod.mech@trp.srmtrichy.edu.in': { name: 'HOD Mechanical', department: 'Mechanical' },
-  'hod.civil@trp.srmtrichy.edu.in': { name: 'HOD Civil', department: 'Civil' },
+  // Legacy / named accounts
+  'amudha.j@trp.srmtrichy.edu.in':  { name: 'Dr. J. Amudha', department: 'EEE' },
+  // Official HOD email accounts
+  'hod.eee@trp.srmtrichy.edu.in':   { name: 'HOD EEE',          department: 'EEE' },
+  'hod.ece@trp.srmtrichy.edu.in':   { name: 'HOD ECE',          department: 'ECE' },
+  'hod.cse@trp.srmtrichy.edu.in':   { name: 'HOD CSE',          department: 'CSE' },
+  'hod.aiml@trp.srmtrichy.edu.in':  { name: 'HOD AIML',         department: 'AIML' },
+  'hod.ai@trp.srmtrichy.edu.in':    { name: 'HOD AI',           department: 'AI' },
+  'hod.mech@trp.srmtrichy.edu.in':  { name: 'HOD Mechanical',   department: 'Mechanical' },
+  'hod.civil@trp.srmtrichy.edu.in': { name: 'HOD Civil',        department: 'Civil' },
+  'hod.it@trp.srmtrichy.edu.in':    { name: 'HOD IT',           department: 'IT' },
+  'hod.mba@trp.srmtrichy.edu.in':   { name: 'HOD MBA',          department: 'MBA' },
+  'hod.sh@trp.srmtrichy.edu.in':    { name: 'HOD Science & Humanities', department: 'Science & Humanities' },
 };
 
 /**
@@ -106,10 +112,11 @@ export const lookupUserByEmail = (email: string): User => {
   if (hodMeta) {
     return {
       email: normalizedEmail,
-      role: 'Staff',
+      role: 'HOD',
       name: hodMeta.name,
       id: `STAFF-${prefix}`,
       department: hodMeta.department,
+      isHod: true,
       studentCount: 0,
     };
   }

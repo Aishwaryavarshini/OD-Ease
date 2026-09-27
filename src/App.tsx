@@ -17,6 +17,7 @@ const ProtectedRoute = ({ children, allowedRoles }: { children: React.ReactNode,
     // Redirect to their respective portal if unauthorized
     if (user.role === 'Student') return <Navigate to="/student" />;
     if (user.role === 'Staff') return <Navigate to="/staff" />;
+    if (user.role === 'HOD') return <Navigate to="/staff" />;
     if (user.role === 'ODIncharge') return <Navigate to="/od-incharge" />;
     if (user.role === 'Principal') return <Navigate to="/principal" />;
   }
@@ -29,6 +30,7 @@ const AppRoutes = () => {
   const getTargetRoute = (role: string) => {
     if (role === 'ODIncharge') return 'od-incharge';
     if (role === 'Principal') return 'principal';
+    if (role === 'HOD') return 'staff';    // HODs use the StaffPortal
     return role.toLowerCase();
   };
 
@@ -38,7 +40,7 @@ const AppRoutes = () => {
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/student" element={<ProtectedRoute allowedRoles={['Student']}><StudentPortal /></ProtectedRoute>} />
       <Route path="/student/apply" element={<ProtectedRoute allowedRoles={['Student']}><ApplyOD /></ProtectedRoute>} />
-      <Route path="/staff" element={<ProtectedRoute allowedRoles={['Staff']}><StaffPortal /></ProtectedRoute>} />
+      <Route path="/staff" element={<ProtectedRoute allowedRoles={['Staff', 'HOD']}><StaffPortal /></ProtectedRoute>} />
       <Route path="/od-incharge" element={<ProtectedRoute allowedRoles={['ODIncharge']}><ODInchargePortal /></ProtectedRoute>} />
       <Route path="/principal" element={<ProtectedRoute allowedRoles={['Principal']}><PrincipalPortal /></ProtectedRoute>} />
     </Routes>

@@ -8,10 +8,12 @@ interface Props {
   onClose: () => void;
   onApprove?: () => void;
   onReject?: () => void;
+  onDirectApproval?: () => void;
   canAct?: boolean;
+  canDirectApproval?: boolean;
 }
 
-const ODApplicationModal: React.FC<Props> = ({ app, onClose, onApprove, onReject, canAct }) => {
+const ODApplicationModal: React.FC<Props> = ({ app, onClose, onApprove, onReject, onDirectApproval, canAct, canDirectApproval }) => {
   const timeDisplay = app.isFullDay
     ? 'Full Day'
     : `${app.fromTime || '—'} to ${app.toTime || '—'}`;
@@ -205,20 +207,32 @@ const ODApplicationModal: React.FC<Props> = ({ app, onClose, onApprove, onReject
         </div>
 
         {/* Footer actions */}
-        {canAct && (
+        {(canAct || canDirectApproval) && (
           <div className="px-6 py-4 border-t flex justify-end space-x-3 bg-gray-50 rounded-b-2xl">
-            <button
-              onClick={() => { onReject?.(); onClose(); }}
-              className="bg-white hover:bg-red-50 text-red-500 border border-red-200 px-5 py-2 rounded-lg text-sm font-medium transition"
-            >
-              Reject
-            </button>
-            <button
-              onClick={() => { onApprove?.(); onClose(); }}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg text-sm font-medium transition"
-            >
-              Approve
-            </button>
+            {canAct && (
+              <button
+                onClick={() => { onReject?.(); onClose(); }}
+                className="bg-white hover:bg-red-50 text-red-500 border border-red-200 px-5 py-2 rounded-lg text-sm font-medium transition"
+              >
+                Reject
+              </button>
+            )}
+            {canAct && (
+              <button
+                onClick={() => { onApprove?.(); onClose(); }}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg text-sm font-medium transition"
+              >
+                Approve
+              </button>
+            )}
+            {canDirectApproval && (
+              <button
+                onClick={() => { onDirectApproval?.(); onClose(); }}
+                className="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-lg text-sm font-medium transition"
+              >
+                Approval
+              </button>
+            )}
           </div>
         )}
       </div>

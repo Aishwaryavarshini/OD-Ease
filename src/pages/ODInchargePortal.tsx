@@ -27,20 +27,30 @@ const ODInchargePortal = () => {
   const pendingCount = applications.filter(a => a.status.includes('Pending')).length;
   const approvedCount = applications.filter(a => a.status === 'Approved').length;
 
-  const canOdInchargeApprove = (app: ODApplication): boolean => {
-    return app.approvals.odIncharge === undefined && app.status !== 'Approved' && app.status !== 'Rejected';
-  };
-
   const handleApprove = (app: ODApplication) => {
-    updateApplicationStatus(app.id, 'Approved', 'ODIncharge', user?.name || 'OD Incharge');
+    updateApplicationStatus(app.id, 'Approved', 'ODIncharge', user?.name || 'EEE Coordinator');
   };
 
   const handleReject = (app: ODApplication) => {
     const reason = window.prompt("Please enter the reason for rejection:");
     if (reason !== null) {
-      updateApplicationStatus(app.id, 'Rejected', 'ODIncharge', user?.name || 'OD Incharge', reason || 'No reason provided');
+      updateApplicationStatus(app.id, 'Rejected', 'ODIncharge', user?.name || 'EEE Coordinator', reason || 'No reason provided');
     }
   };
+
+  const handleDirectApproval = (app: ODApplication) => {
+    directApprove(app.id, user?.name || 'EEE Coordinator');
+  };
+
+  // Eligibility: Approve / Reject — standard ODIncharge step
+  const canApproveOrReject = (app: ODApplication): boolean =>
+    app.approvals.odIncharge === undefined &&
+    app.status !== 'Approved' &&
+    app.status !== 'Rejected';
+
+  // Eligibility: Approval (direct / final approval)
+  const canDirectApproval = (app: ODApplication): boolean =>
+    app.status !== 'Approved' && app.status !== 'Rejected';
 
   const getStatusBadge = (status: string) => {
     if (status === 'Approved') return <span className="badge badge-approved">Approved</span>;
@@ -71,7 +81,7 @@ const ODInchargePortal = () => {
             TRP
           </div>
           <div className="text-center">
-            <h2 className="text-xs font-bold tracking-wider uppercase">OD Incharge Portal</h2>
+            <h2 className="text-xs font-bold tracking-wider uppercase">EEE Coordinator Portal</h2>
           </div>
         </div>
 
@@ -95,7 +105,7 @@ const ODInchargePortal = () => {
       <main className="flex-1 ml-64 flex flex-col h-screen overflow-hidden">
         {/* Header */}
         <header className="bg-white border-b px-8 py-4 flex justify-between items-center z-10 shrink-0">
-          <h1 className="text-xl font-bold text-gray-800">OD Incharge Dashboard</h1>
+          <h1 className="text-xl font-bold text-gray-800">EEE Coordinator Dashboard</h1>
           <div className="flex items-center space-x-6">
             <Bell size={20} className="text-gray-500 cursor-pointer" />
             <div className="flex items-center space-x-3">
@@ -104,7 +114,7 @@ const ODInchargePortal = () => {
               </div>
               <div className="flex flex-col">
                 <span className="text-sm font-bold text-gray-900 leading-tight">{user?.name}</span>
-                <span className="text-xs text-gray-500">OD Coordinator</span>
+                <span className="text-xs text-gray-500">EEE Coordinator</span>
               </div>
             </div>
             <button onClick={logout} className="text-xs font-medium text-red-500 hover:underline">Logout</button>
@@ -208,20 +218,32 @@ const ODInchargePortal = () => {
                               {getStatusBadge(app.status)}
                             </td>
                             <td className="p-4 text-center" onClick={e => e.stopPropagation()}>
-                              {canOdInchargeApprove(app) ? (
-                                <div className="flex space-x-2 justify-center">
-                                  <button
-                                    onClick={() => handleApprove(app)}
-                                    className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-xs font-medium transition"
-                                  >
-                                    Approve
-                                  </button>
-                                  <button
-                                    onClick={() => handleReject(app)}
-                                    className="bg-white hover:bg-red-50 text-red-500 border border-red-200 px-3 py-1.5 rounded text-xs font-medium transition"
-                                  >
-                                    Reject
-                                  </button>
+                              {(canApproveOrReject(app) || canDirectApproval(app)) ? (
+                                <div className="flex flex-wrap gap-1.5 justify-center">
+                                  {canApproveOrReject(app) && (
+                                    <button
+                                      onClick={() => handleApprove(app)}
+                                      className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-xs font-medium transition"
+                                    >
+                                      Approve
+                                    </button>
+                                  )}
+                                  {canApproveOrReject(app) && (
+                                    <button
+                                      onClick={() => handleReject(app)}
+                                      className="bg-white hover:bg-red-50 text-red-500 border border-red-200 px-3 py-1.5 rounded text-xs font-medium transition"
+                                    >
+                                      Reject
+                                    </button>
+                                  )}
+                                  {canDirectApproval(app) && (
+                                    <button
+                                      onClick={() => handleDirectApproval(app)}
+                                      className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded text-xs font-medium transition"
+                                    >
+                                      Approval
+                                    </button>
+                                  )}
                                 </div>
                               ) : (
                                 <span className="text-gray-400 text-xs italic">Action Taken</span>
@@ -245,9 +267,11 @@ const ODInchargePortal = () => {
         <ODApplicationModal
           app={selectedApp}
           onClose={() => setSelectedApp(null)}
-          canAct={canOdInchargeApprove(selectedApp)}
+          canAct={canApproveOrReject(selectedApp)}
+          canDirectApproval={canDirectApproval(selectedApp)}
           onApprove={() => { handleApprove(selectedApp); setSelectedApp(null); }}
           onReject={() => { handleReject(selectedApp); setSelectedApp(null); }}
+          onDirectApproval={() => { handleDirectApproval(selectedApp); setSelectedApp(null); }}
         />
       )}
     </div>
