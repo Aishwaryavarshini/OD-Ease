@@ -27,12 +27,12 @@
 
 <hr>
 
-<h2>📌 About the Project</h2>
+<h2>About the Project</h2>
 
 <p>
   <strong>OD Ease</strong> is a web-based On-Duty Management System designed
   to simplify and digitize the complete OD application and approval process
-  in an educational institution.
+  in our educational institution.
 </p>
 
 <p>
@@ -41,7 +41,7 @@
   coordinators, department authorities, and administrators.
 </p>
 
-<h2>🎯 Objectives</h2>
+<h2>Objectives</h2>
 
 <ul>
   <li>Digitize the complete On-Duty application process.</li>
@@ -53,7 +53,7 @@
   <li>Improve transparency and accountability in OD management.</li>
 </ul>
 
-<h2>👥 User Roles</h2>
+<h2>User Roles</h2>
 
 <table>
   <thead>
@@ -90,7 +90,7 @@
   </tbody>
 </table>
 
-<h2>🔄 OD Approval Workflow</h2>
+<h2>OD Approval Workflow</h2>
 
 <h3>Academic OD</h3>
 
@@ -115,10 +115,10 @@
   &nbsp;→&nbsp;
   <strong>CC / Co-CC</strong>
   &nbsp;→&nbsp;
-  <strong>EEE Coordinator</strong>
+  <strong>HOD/Overall Coordinator</strong>
 </p>
 
-<h2>✨ Key Features</h2>
+<h2>Key Features</h2>
 
 <table>
   <thead>
@@ -129,53 +129,53 @@
   </thead>
   <tbody>
     <tr>
-      <td>📝 OD Application</td>
+      <td>OD Application</td>
       <td>Students can submit structured On-Duty applications digitally.</td>
     </tr>
     <tr>
-      <td>🔐 Role-Based Access</td>
+      <td>Role-Based Access</td>
       <td>Each user receives access according to their assigned role and responsibilities.</td>
     </tr>
     <tr>
-      <td>✅ Multi-Level Approval</td>
+      <td>Multi-Level Approval</td>
       <td>Applications move through the appropriate approval hierarchy automatically.</td>
     </tr>
     <tr>
-      <td>🏏 Sports Workflow</td>
+      <td>Sports Workflow</td>
       <td>Sports ODs include an additional Sports Staff verification stage.</td>
     </tr>
     <tr>
-      <td>📎 Evidence Management</td>
+      <td>Evidence Management</td>
       <td>Approved ODs can proceed through post-event evidence submission and verification.</td>
     </tr>
     <tr>
-      <td>📍 Geotag Detection</td>
+      <td>Geotag Detection</td>
       <td>Evidence can be checked for location information from image metadata or visible GPS information.</td>
     </tr>
     <tr>
-      <td>⏰ Deadline Management</td>
+      <td>Deadline Management</td>
       <td>Evidence deadlines can be monitored and extended by the authorized coordinator.</td>
     </tr>
     <tr>
-      <td>📊 Dashboard</td>
+      <td>Dashboard</td>
       <td>Provides a focused view of applications submitted during the current day.</td>
     </tr>
     <tr>
-      <td>📈 Reports</td>
+      <td>Reports</td>
       <td>Provides active OD workflow information together with audit reporting.</td>
     </tr>
     <tr>
-      <td>📥 Excel Export</td>
+      <td>Excel Export</td>
       <td>OD report information can be exported for administrative use.</td>
     </tr>
     <tr>
-      <td>🗂️ Records</td>
+      <td>Records</td>
       <td>Past OD applications are retained as historical records.</td>
     </tr>
   </tbody>
 </table>
 
-<h2>📋 Evidence Management</h2>
+<h2>Evidence Management</h2>
 
 <p>
   OD Ease provides a structured post-OD evidence workflow for approved
@@ -193,7 +193,7 @@
   <li>Completed evidence records can be closed by the coordinator.</li>
 </ul>
 
-<h2>📊 Dashboard & Reporting</h2>
+<h2>Dashboard & Reporting</h2>
 
 <h3>Dashboard</h3>
 
@@ -217,7 +217,7 @@
   the Records section.
 </p>
 
-<h2>🛠️ Technology Stack</h2>
+<h2>Technology Stack</h2>
 
 <table>
   <tbody>
@@ -252,39 +252,9 @@
   </tbody>
 </table>
 
-<h2>🏗️ System Architecture</h2>
+<h2>System Architecture</h2>
 
-<pre>
-                    ┌─────────────────────┐
-                    │       Student       │
-                    │    Apply for OD     │
-                    └──────────┬──────────┘
-                               │
-                               ▼
-                    ┌─────────────────────┐
-                    │       Mentor        │
-                    │   Review / Action   │
-                    └──────────┬──────────┘
-                               │
-                               ▼
-                    ┌─────────────────────┐
-                    │     CC / Co-CC      │
-                    │   Review / Action   │
-                    └──────────┬──────────┘
-                               │
-                               ▼
-                    ┌─────────────────────┐
-                    │  EEE Coordinator    │
-                    │ Final Administration│
-                    └──────────┬──────────┘
-                               │
-                               ▼
-                    ┌─────────────────────┐
-                    │ Evidence & Records  │
-                    └─────────────────────┘
-</pre>
-
-<h2>🔒 Security & Access Control</h2>
+<h2>Security & Access Control</h2>
 
 <ul>
   <li>Role-based portal access.</li>
@@ -294,7 +264,7 @@
   <li>Separate authorization for coordinator-level actions.</li>
 </ul>
 
-<h2>🚀 Deployment</h2>
+<h2>Deployment</h2>
 
 <p>
   The application is deployed using Netlify and connected to the Supabase
@@ -307,7 +277,7 @@
   </a>
 </p>
 
-<h2>📁 Project Structure</h2>
+<h2>Project Structure</h2>
 
 <pre>
 OD-Ease/
@@ -325,14 +295,14 @@ OD-Ease/
 └── netlify.toml
 </pre>
 
-<h2>⚙️ Local Development</h2>
+<h2>Local Development</h2>
 
 <pre>
 npm install
 npm run dev
 </pre>
 
-<h2>🏭 Production Build</h2>
+<h2>Production Build</h2>
 
 <pre>
 npm run build
@@ -343,10 +313,10 @@ npm run build
   <code>dist/</code> directory.
 </p>
 
-<h2>📌 Project Status</h2>
+<h2>Project Status</h2>
 
 <p align="center">
-  <strong>🟢 Production Ready</strong>
+  <strong>Production Ready</strong>
 </p>
 
 <p align="center">
